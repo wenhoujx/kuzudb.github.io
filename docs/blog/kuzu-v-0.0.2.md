@@ -3,8 +3,8 @@ This post is about the second release of Kùzu. However, since these blogs are o
 way to reach some people publicly, we want to start with a much more
 important topic:
 
-**Donate to the Victims of [Türkiye-Syria Earthquake](https://www.bbc.com/news/world-middle-east-64590946):**
-Our hearts and prayers go to all the victims, those who survived and those who passed,
+### Donate to the Victims of [Türkiye-Syria Earthquake](https://www.bbc.com/news/world-middle-east-64590946):
+Our hearts, thoughts, and prayers go to all the victims, those who survived and those who passed,
 in Syria and Türkiye. 
 There will be a very difficult winter for all those who survived so everyone needs to help. 
 Here are two pointers for trustworthy organizations we know of that are trying to help
@@ -17,8 +17,9 @@ other organizations below in this footnote[^1].
 Back to the post. Kùzu codebase is changing fast but this release still has a focus: we 
 have worked quite hard since the last release to integrate Kùzu to import data from
 different formats and export data to different formats. There are also several important 
-features in the new Cypher clauses and queries we support and additional string 
-processing capabilities. We will give a summary of each of these below. The full
+features in the new Cypher clauses and queries we support,  additional string 
+processing capabilities, and new DDL statement support. We will give a summary of each 
+of these below. The full
 [release notes are here](https://github.com/kuzudb/kuzu/releases).
 
 ## Exporting Query Results to Pytorch Geometric and NetworkX
@@ -40,8 +41,8 @@ on the nodes into tensors on the nodes that can be used as features in the `Data
 Any property that cannot be auto-converted, or edge properties are also returned in case you need
 want to manually put them into the `Data/HeteroData` objects.
 
-**Colab Demonstrations**
-Here are 2 Colab notebooks that you can play around with to see how you can develp graph learning
+**Colab Demonstrations:**
+Here are 2 Colab notebooks that you can play around with to see how you can develop graph learning
 pipelines using Kùzu as your GDBMSs:
 1. [Node property prediction](https://colab.research.google.com/drive/1fzcwBwTY-M19p7OOTIaynfgHFcAQo9NK?usp=sharing#scrollTo=nyXPXQ2dMesl)
 2. [Link prediction](https://colab.research.google.com/drive/1QdX7CDdajIAb04lqaO5PfJlpKG-ljG28?usp=sharing#scrollTo=KIZPfDBkVJSB)
@@ -50,7 +51,84 @@ The examples demonstrate how to extract a subgraph,
 train graph convolutional or neural networks (GCNs or GNNs), make some node property
 or link predictions and save them back in Kùzu so you can query these predictions.
 
-**NetworkX**
+### NetworkX: `QueryResult.get_as_networkx()` function
+Our [Python API](https://kuzudb.com/docs/client-apis/python-api/overview.html) now has a 
+new `QueryResult.get_as_networkx()` function that can convert query results
+that contain nodes and relationships into NetworkX directed or undirected graphs.  
+Using this function, you can build pipelines
+that benefits from Kùzu's DBMS functionalities (e.g., querying, data extraction and transformations,
+using a high-level query language with very fast performance), and NetworkX's rich library of 
+graph analytics algorithms.
+
+**Colab Demonstration:**
+Here is a [Colab notebook](https://colab.research.google.com/drive/1NDsnFDWcSGoaOl-mOgG0zrPG2VAr8Q6H?usp=sharing#scrollTo=AkpBul7ZpUM5) 
+that you can play around with that shows how to do basic graph visualization of query results
+and build a pipeline that computes PageRanks of a subgraph and store those PageRank 
+values back as new node properties in Kùzu and query them.
+
+## Data Import from and Export to Parquet and Arrow
+We have removed our own CSV reader and instead now use [Arrow](https://arrow.apache.org/)
+as our default library when bulk importing data through [`COPY FROM` statements](https://kuzudb.com/docs/data-import/csv-import.html). 
+Using Arrow, we can not only bulk import
+from CSV files but also from arrow IPC and parquet files. We detect the file type
+from the suffix of the file; so if the query says `COPY user FROM `./user.parquet`,
+we infer that this is a parquet file and parse it so. See the details [here]().
+
+## Multi-labeled or Unlabeled Queries
+A very useful feature of the query languages of GDBMSs is their
+ability to elegantly express unions of join queries. 
+We had written about this feature of GDBMSs in this blog post about 
+[What Every Competent GDBMS Should Do](https://kuzudb.com/blog/what-every-gdbms-should-do-and-vision.html#feature-4-schema-querying)
+(see the last paragraph of Section `Feature 4: Schema Querying`).
+In Cypher, a good example
+of this is to not bind the node and relationship variables to a specific node/relationship
+labels/tables. Consider this query:
+```
+MATCH (a:User)-[e]->(b)
+WHERE a.name = 'Karissa'
+RETURN a, e, b
+```
+Thsi query asks for all types of relationships that Karissa can have to any possible other
+node (not necessarily of label `User`) in the query. So if the database contains 
+`Likes` relationships from `Users` to `Comments`, `Follows` relationships
+from `Users` to `Users`, and `LivesIn` relationships from `Users` and `Cities`, 
+variables e and b can bind to records from all of these
+relationship and node labels, respectively. 
+
+You can also restrict the labels of nodes/rels to a fixed set that contains
+more than one label.
+For example you can do:
+
+```
+MATCH (a:User)-[e:Likes|Follows]->(b)
+WHERE a.name = 'Karissa'
+RETURN a, e, b
+```
+This forces e to match to only Likes relationship or Follows relationship records (so
+excludes the `LivesIn` records we mentioned above).
+
+Kùzu now supports such queries. Our query execution
+is based on performing scans of each possible node/rel table and index
+and when a variable `x` can bind to multiple node/rel tables, `L1, L2, ..., Lk`,
+we reserve one vector for each possible property of each node/rel table.  
+If anyeone has any optimizations to do something smarter, it would be very interesting
+to hear!
+
+
+
+## Other Features: 
+TODO(Guodong): Write better
+- CASE
+- Enhancements to Strings: regexes and UTF-8..
+- XYZ
+- Removal of relationships that can be between multiple source or destionation labels.
+- 
+
+
+Enjoy our new release and don't forget to donate to the earthquake victims.
+
+
+*by Kùzu team, 02-13-2023, Waterloo, ON, Canada**
 
 
 [^1]: For Türkiye two other organizations are [AFAD](https://en.afad.gov.tr/earthquake-campaign), which is the public
