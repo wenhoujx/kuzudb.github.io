@@ -19,8 +19,16 @@ have worked quite hard since the last release to integrate Kùzu to import data 
 different formats and export data to different formats. There are also several important 
 features in the new Cypher clauses and queries we support,  additional string 
 processing capabilities, and new DDL statement support. We will give a summary of each 
-of these below. The full
-[release notes are here](https://github.com/kuzudb/kuzu/releases).
+of these below. 
+
+For installing new version, please visit the [installation guide](https://kuzudb.com/docs/getting-started.html) and
+the full
+[release notes are here](https://github.com/kuzudb/kuzu/releases). If you are eager to play with
+a few Colab notebooks, here are several links: 
+- [General Kùzu Demo](https://colab.research.google.com/drive/14oqEC8p7fmkjetnpfDmx40WZoILpSaeL?usp=sharing#scrollTo=vKj5lBSDxgaT)
+- [Export Query Results to Pytorch Geometric: Node Property Prediction Example](https://colab.research.google.com/drive/1fzcwBwTY-M19p7OOTIaynfgHFcAQo9NK?usp=sharing#scrollTo=nyXPXQ2dMesl) 
+- [Export Query Results to Pytorch Geometric: Link Prediction Example](https://colab.research.google.com/drive/1QdX7CDdajIAb04lqaO5PfJlpKG-ljG28?usp=sharing#scrollTo=KIZPfDBkVJSB)
+- [Export Query Results to NetworkX](https://colab.research.google.com/drive/1NDsnFDWcSGoaOl-mOgG0zrPG2VAr8Q6H?usp=sharing#scrollTo=AkpBul7ZpUM5)
 
 ## Exporting Query Results to Pytorch Geometric and NetworkX
 Perhaps most excitingly, we have added the first capabilities to integrate with 2 popular 
@@ -72,7 +80,7 @@ as our default library when bulk importing data through [`COPY FROM` statements]
 Using Arrow, we can not only bulk import
 from CSV files but also from arrow IPC and parquet files. We detect the file type
 from the suffix of the file; so if the query says `COPY user FROM `./user.parquet`,
-we infer that this is a parquet file and parse it so. See the details [here]().
+we infer that this is a parquet file and parse it so. See the details [here](xxx).
 
 ## Multi-labeled or Unlabeled Queries
 A very useful feature of the query languages of GDBMSs is their
