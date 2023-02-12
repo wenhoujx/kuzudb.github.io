@@ -1,7 +1,6 @@
 # Kùzu 0.0.2 Release
-This post is about the second release of Kùzu. However, since these blogs are our only
-way to reach some people publicly, we want to start with a much more
-important topic:
+This post is about the second release of Kùzu. However, we want to start with something much more
+important:
 
 ### Donate to the Victims of [Türkiye-Syria Earthquake](https://www.bbc.com/news/world-middle-east-64590946):
 Our hearts, thoughts, and prayers go to all the victims, those who survived and those who passed,
@@ -14,7 +13,7 @@ you can donate to the [White Helmets](https://www.whitehelmets.org/en/). Be gene
 other organizations below in this footnote[^1].
 
 ## Overview of Kùzu 0.0.2
-Back to the post. Kùzu codebase is changing fast but this release still has a focus: we 
+Back to our release. Kùzu codebase is changing fast but this release still has a focus: we 
 have worked quite hard since the last release to integrate Kùzu to import data from
 different formats and export data to different formats. There are also several important 
 features in the new Cypher clauses and queries we support,  additional string 
